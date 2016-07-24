@@ -1,0 +1,12 @@
+package gut.follower.org;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class JConductorApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(JConductorApplication.class, args);
+	}
+}
