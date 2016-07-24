@@ -12,9 +12,12 @@ public class Track {
     @Id
     private String id;
 
+    private Account account;
+
     private List<Location> locations;
 
-    public Track(List<Location> locations) {
+    public Track(Account account, List<Location> locations) {
+        this.account = account;
         this.locations = locations;
     }
 
@@ -24,6 +27,14 @@ public class Track {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
     }
 
     public List<Location> getLocations() {
