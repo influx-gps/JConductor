@@ -30,31 +30,40 @@ public class TrackController {
     private AccountRepository accountRepository;
 
     @RequestMapping(method = RequestMethod.POST)
-    public Track postTrack(Principal principal, @RequestBody Map<String, Long> map) {
+    public Track postTrack(Principal principal, @RequestBody Map<String, String> map) {
 
         List<Location> locations = new LinkedList<>();
-        Location location = new Location(map.get("latitude"), map.get("longitude"));
+        Location location = new Location(Long.parseLong(map.get("latitude")), Long.parseLong(map.get("longitude")));
         locations.add(location);
-        Track track = new Track(accountRepository.findByUsername(principal.getName()), locations);
+
+        String accountId = accountRepository.findByUsername(principal.getName()).getId();
+
+        Track track = new Track(accountId, locations);
 
         return trackRepository.save(track);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
-    public Track addLocation(Principal principal, @RequestBody Map<String, Long> map, @PathVariable String id) {
-        Track track = trackRepository.findByAccountAndId(accountRepository.findByUsername(principal.getName()), id);
-        Location location = new Location(map.get("latitude"), map.get("longitude"));
-        track.getLocations().add(location);
-        return trackRepository.save(track);
+    public Track addLocation(Principal principal, @RequestBody Map<String, String> map, @PathVariable String id) {
+        Track track = trackRepository.findByAccountIdAndId(accountRepository.findByUsername(principal.getName()).getId(), id);
+
+        if (!track.getFinished()) {
+            Location location = new Location(Long.parseLong(map.get("latitude")), Long.parseLong(map.get("longitude")));
+            track.getLocations().add(location);
+            track.setFinished(Boolean.valueOf(map.get("finished")));
+            return trackRepository.save(track);
+        } else {
+            throw new IllegalStateException("This track is finished");
+        }
     }
 
     @RequestMapping(method = RequestMethod.GET)
     public Object getTracks(Principal principal) {
-        return trackRepository.findByAccount(accountRepository.findByUsername(principal.getName()));
+        return trackRepository.findByAccountId(accountRepository.findByUsername(principal.getName()).getId());
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public Track getTrack(Principal principal, @PathVariable String id) {
-        return trackRepository.findByAccountAndId(accountRepository.findByUsername(principal.getName()), id);
+        return trackRepository.findByAccountIdAndId(accountRepository.findByUsername(principal.getName()).getId(), id);
     }
 }
