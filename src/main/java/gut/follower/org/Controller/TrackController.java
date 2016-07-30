@@ -6,11 +6,7 @@ import gut.follower.org.Models.Track;
 import gut.follower.org.Repositories.AccountRepository;
 import gut.follower.org.Repositories.TrackRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.LinkedList;
@@ -30,10 +26,10 @@ public class TrackController {
     private AccountRepository accountRepository;
 
     @RequestMapping(method = RequestMethod.POST)
-    public Track postTrack(Principal principal, @RequestBody Map<String, String> map) {
+    public Track postTrack(Principal principal, @RequestBody Map<String, Double> map) {
 
         List<Location> locations = new LinkedList<>();
-        Location location = new Location(Long.parseLong(map.get("latitude")), Long.parseLong(map.get("longitude")));
+        Location location = new Location(map.get("latitude"), map.get("longitude"));
         locations.add(location);
 
         String accountId = accountRepository.findByUsername(principal.getName()).getId();
@@ -44,13 +40,16 @@ public class TrackController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
-    public Track addLocation(Principal principal, @RequestBody Map<String, String> map, @PathVariable String id) {
+    public Track addLocation(Principal principal,
+                             @RequestBody Map<String, Double> map,
+                             @PathVariable String id,
+                             @RequestParam(name = "finished", defaultValue = "false") boolean finished) {
         Track track = trackRepository.findByAccountIdAndId(accountRepository.findByUsername(principal.getName()).getId(), id);
 
         if (!track.getFinished()) {
-            Location location = new Location(Long.parseLong(map.get("latitude")), Long.parseLong(map.get("longitude")));
+            Location location = new Location(map.get("latitude"), map.get("longitude"));
             track.getLocations().add(location);
-            track.setFinished(Boolean.valueOf(map.get("finished")));
+            track.setFinished(finished);
             return trackRepository.save(track);
         } else {
             throw new IllegalStateException("This track is finished");
