@@ -13,8 +13,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-/**
- */
 @RestController
 @RequestMapping("/rest/track")
 public class TrackController {

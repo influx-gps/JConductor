@@ -2,9 +2,6 @@ package gut.follower.org.Models;
 
 import org.springframework.data.annotation.Id;
 
-/**
- *
- */
 public class Account {
 
     @Id

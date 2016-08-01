@@ -11,19 +11,23 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/register")
-public class RegisterController {
+@RequestMapping("/login")
+public class LoginController {
 
     @Autowired
-    private AccountRepository accountRepository;
+    AccountRepository accountRepository;
 
     @RequestMapping(method = RequestMethod.POST)
-    public Account registerUser(@RequestBody Map<String, String> map){
-        Account account = new Account(map.get("name"), map.get("password"));
-        if(accountRepository.findByUsername(map.get("name")) == null){
-            return accountRepository.save(account);
+    public Account authenticateUser(@RequestBody Map<String, String> map){
+        Account account = accountRepository.findByUsername(map.get("username"));
+        if(account != null){
+            if(account.getPassword().equals(map.get("password"))){
+                return account;
+            } else {
+                throw new IllegalStateException("Wrong user credentials");
+            }
         } else {
-            throw new IllegalStateException("Username "+account.getUsername()+" is already taken");
+            throw new IllegalStateException("Wrong user credentials");
         }
     }
 }
