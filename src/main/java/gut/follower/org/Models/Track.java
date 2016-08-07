@@ -2,6 +2,7 @@ package gut.follower.org.Models;
 
 import org.springframework.data.annotation.Id;
 
+import java.util.Date;
 import java.util.List;
 
 public class Track {
@@ -19,11 +20,32 @@ public class Track {
 
     private Double distance;
 
+    private long startTime;
+
+    private long finishTime;
+
     private List<Location> locations;
 
-    public Track(String accountId, List<Location> locations) {
+    public Track(String accountId, List<Location> locations, long startTime) {
         this.accountId = accountId;
         this.locations = locations;
+        this.startTime = startTime;
+    }
+
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(long startTime) {
+        this.startTime = startTime;
+    }
+
+    public long getFinishTime() {
+        return finishTime;
+    }
+
+    public void setFinishTime(long finishTime) {
+        this.finishTime = finishTime;
     }
 
     public String getId() {

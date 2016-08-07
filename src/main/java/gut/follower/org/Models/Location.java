@@ -4,10 +4,12 @@ public class Location {
 
     private double latitude;
     private double longitude;
+    private long time;
 
-    public Location(double latitude, double longitude) {
+    public Location(double latitude, double longitude, long time) {
         this.latitude = latitude;
         this.longitude = longitude;
+        this.time = time;
     }
 
     public double getLatitude() {
@@ -24,5 +26,13 @@ public class Location {
 
     public void setLongitude(double longitude) {
         this.longitude = longitude;
+    }
+
+    public long getTime() {
+        return time;
+    }
+
+    public void setTime(long time) {
+        this.time = time;
     }
 }

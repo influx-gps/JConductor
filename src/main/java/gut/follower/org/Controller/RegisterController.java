@@ -19,8 +19,10 @@ public class RegisterController {
 
     @RequestMapping(method = RequestMethod.POST)
     public Account registerUser(@RequestBody Map<String, String> map){
-        Account account = new Account(map.get("name"), map.get("password"));
-        if(accountRepository.findByUsername(map.get("name")) == null){
+        Account account = new Account(map.get("username"), map.get("password"), map.get("email"));
+        if(accountRepository.findByEmail(account.getEmail()) != null){
+            throw new IllegalStateException("There is account registered with the given email");
+        } else if(accountRepository.findByUsername(account.getUsername()) == null){
             return accountRepository.save(account);
         } else {
             throw new IllegalStateException("Username "+account.getUsername()+" is already taken");

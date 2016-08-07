@@ -27,12 +27,12 @@ public class TrackController {
     public Track postTrack(Principal principal, @RequestBody Map<String, Double> map) {
 
         List<Location> locations = new LinkedList<>();
-        Location location = new Location(map.get("latitude"), map.get("longitude"));
+        Location location = new Location(map.get("latitude"), map.get("longitude"), map.get("time").longValue());
         locations.add(location);
 
         String accountId = accountRepository.findByUsername(principal.getName()).getId();
 
-        Track track = new Track(accountId, locations);
+        Track track = new Track(accountId, locations, location.getTime());
 
         return trackRepository.save(track);
     }
@@ -45,9 +45,10 @@ public class TrackController {
         Track track = trackRepository.findByAccountIdAndId(accountRepository.findByUsername(principal.getName()).getId(), id);
 
         if (!track.getFinished()) {
-            Location location = new Location(map.get("latitude"), map.get("longitude"));
+            Location location = new Location(map.get("latitude"), map.get("longitude"), map.get("time").longValue());
             track.getLocations().add(location);
             track.setFinished(finished);
+            track.setFinishTime(location.getTime());
             return trackRepository.save(track);
         } else {
             throw new IllegalStateException("This track is finished");
