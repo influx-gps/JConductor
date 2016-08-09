@@ -3,12 +3,10 @@ package gut.follower.org.Controller;
 import gut.follower.org.Models.Account;
 import gut.follower.org.Repositories.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/login")
@@ -18,16 +16,19 @@ public class LoginController {
     AccountRepository accountRepository;
 
     @RequestMapping(method = RequestMethod.POST)
-    public Account authenticateUser(@RequestBody Map<String, String> map){
-        Account account = accountRepository.findByUsername(map.get("username"));
-        if(account != null){
-            if(account.getPassword().equals(map.get("password"))){
-                return account;
-            } else {
-                throw new IllegalStateException("Wrong user credentials");
-            }
-        } else {
-            throw new IllegalStateException("Wrong user credentials");
-        }
+    public Account authenticateUser(@RequestBody Map<String, String> userData){
+        return Optional
+                .ofNullable(getAccountForUsername(userData.get("username")))
+                .filter(account ->
+                        account.getPassword().equals(userData.get("password")))
+                .orElseThrow(() ->
+                        new IllegalStateException("Wrong user credentials"));
+    }
+
+    private Account getAccountForUsername(String username){
+        return Optional
+                .ofNullable(accountRepository.findByUsername(username))
+                .orElseThrow(() ->
+                        new IllegalStateException("Wrong user credentials"));
     }
 }
