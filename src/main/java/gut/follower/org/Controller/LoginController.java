@@ -16,11 +16,11 @@ public class LoginController {
     AccountRepository accountRepository;
 
     @RequestMapping(method = RequestMethod.POST)
-    public Account authenticateUser(@RequestBody Map<String, String> userData){
+    public Account authenticateUser(@RequestBody Account account){
         return Optional
-                .ofNullable(getAccountForUsername(userData.get("username")))
-                .filter(account ->
-                        account.getPassword().equals(userData.get("password")))
+                .ofNullable(getAccountForUsername(account.getUsername()))
+                .filter(acc ->
+                        acc.getPassword().equals(account.getPassword()))
                 .orElseThrow(() ->
                         new IllegalStateException("Wrong user credentials"));
     }
