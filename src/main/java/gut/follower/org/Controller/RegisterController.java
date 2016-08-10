@@ -7,8 +7,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.tags.form.OptionsTag;
 
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/register")
@@ -18,14 +20,26 @@ public class RegisterController {
     private AccountRepository accountRepository;
 
     @RequestMapping(method = RequestMethod.POST)
-    public Account registerUser(@RequestBody Map<String, String> map){
-        Account account = new Account(map.get("username"), map.get("password"), map.get("email"));
-        if(accountRepository.findByEmail(account.getEmail()) != null){
-            throw new IllegalStateException("There is account registered with the given email");
-        } else if(accountRepository.findByUsername(account.getUsername()) == null){
-            return accountRepository.save(account);
-        } else {
-            throw new IllegalStateException("Username "+account.getUsername()+" is already taken");
-        }
+    public Account registerUser(@RequestBody Account account) {
+        return accountRepository.save(registerAccount(account));
+    }
+
+    private Account checkIfEmailNotTaken(Account account) {
+        return Optional.of(account)
+                .filter(acc ->
+                            accountRepository
+                                    .findByEmail(acc.getEmail()) == null)
+                .orElseThrow(() ->
+                        new IllegalStateException("Email has been taken"));
+    }
+
+    private Account registerAccount(Account account) {
+        return Optional
+                .ofNullable(checkIfEmailNotTaken(account))
+                .filter(acc ->
+                            accountRepository
+                                    .findByUsername(acc.getUsername()) == null)
+                .orElseThrow(() ->
+                        new IllegalStateException("Username has been taken"));
     }
 }
