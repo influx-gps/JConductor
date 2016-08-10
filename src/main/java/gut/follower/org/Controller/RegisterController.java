@@ -20,27 +20,28 @@ public class RegisterController {
     private AccountRepository accountRepository;
 
     @RequestMapping(method = RequestMethod.POST)
-    public Account registerUser(@RequestBody Map<String, String> map) {
-        return accountRepository.save(Optional.ofNullable(registerAccount(map)).get());
+    public Account registerUser(@RequestBody Map<String, String> userData) {
+        return accountRepository.save(registerAccount(userData));
     }
 
-    private Account checkEmail(Map<String, String> map) {
-        return Optional.of(new Account(map.get("username"), map.get("password"), map.get("email")))
+    private Account checkIfEmailNotTaken(Map<String, String> userData) {
+        return Optional.of(new Account( userData.get("username"),
+                                        userData.get("password"),
+                                        userData.get("email") ))
                 .filter(account ->
-                        accountRepository
+                            accountRepository
                                 .findByEmail(account.getEmail()) == null)
                 .orElseThrow(() ->
                         new IllegalStateException("Email has been taken"));
     }
 
-    private Account registerAccount(Map<String, String> map) {
+    private Account registerAccount(Map<String, String> userData) {
         return Optional
-                .ofNullable(checkEmail(map))
+                .ofNullable(checkIfEmailNotTaken(userData))
                 .filter(account ->
                             accountRepository
                                     .findByUsername(account.getUsername()) == null)
                 .orElseThrow(() ->
                         new IllegalStateException("Username has been taken"));
     }
-
 }
