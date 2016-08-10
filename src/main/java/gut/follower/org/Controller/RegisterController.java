@@ -30,7 +30,7 @@ public class RegisterController {
                                         userData.get("email") ))
                 .filter(account ->
                             accountRepository
-                                .findByEmail(account.getEmail()) == null)
+                                    .findByEmail(account.getEmail()) == null)
                 .orElseThrow(() ->
                         new IllegalStateException("Email has been taken"));
     }
