@@ -9,9 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/rest/track")
@@ -24,35 +22,46 @@ public class TrackController {
     private AccountRepository accountRepository;
 
     @RequestMapping(method = RequestMethod.POST)
-    public Track postTrack(Principal principal, @RequestBody Map<String, Double> map) {
+    public Track postTrack(Principal principal, @RequestBody Location location) {
+        return trackRepository.save(createNewTrack(principal, location));
+    }
 
-        List<Location> locations = new LinkedList<>();
-        Location location = new Location(map.get("latitude"), map.get("longitude"), map.get("time").longValue());
-        locations.add(location);
+    private Track createNewTrack(Principal principal, Location location){
+        return new Track(getAccountId(principal),
+                         Collections.singletonList(location),
+                         location.getTime());
+    }
 
-        String accountId = accountRepository.findByUsername(principal.getName()).getId();
-
-        Track track = new Track(accountId, locations, location.getTime());
-
-        return trackRepository.save(track);
+    private String getAccountId(Principal principal){
+        return accountRepository
+                .findByUsername(principal.getName())
+                .getId();
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
     public Track addLocation(Principal principal,
-                             @RequestBody Map<String, Double> map,
+                             @RequestBody Location location,
                              @PathVariable String id,
                              @RequestParam(name = "finished", defaultValue = "false") boolean finished) {
-        Track track = trackRepository.findByAccountIdAndId(accountRepository.findByUsername(principal.getName()).getId(), id);
+        return Optional.ofNullable(getTrackByIds(principal, id))
+                .filter(track -> !track.getFinished())
+                .map(track -> {
+                    track.getLocations().add(location);
+                    track.setFinished(finished);
+                    track.setFinishTime(location.getTime());
+                    return trackRepository.save(track);
+                })
+                .orElseThrow(() ->
+                        new IllegalStateException("This track has been finished"));
+    }
 
-        if (!track.getFinished()) {
-            Location location = new Location(map.get("latitude"), map.get("longitude"), map.get("time").longValue());
-            track.getLocations().add(location);
-            track.setFinished(finished);
-            track.setFinishTime(location.getTime());
-            return trackRepository.save(track);
-        } else {
-            throw new IllegalStateException("This track is finished");
-        }
+    private Track getTrackByIds(Principal principal, String trackId){
+        return Optional
+                .ofNullable(trackRepository
+                        .findByAccountIdAndId(accountRepository
+                                .findByUsername(principal.getName()).getId(), trackId))
+                .orElseThrow(() ->
+                        new IllegalStateException("Track does not exists"));
     }
 
     @RequestMapping(method = RequestMethod.GET)
