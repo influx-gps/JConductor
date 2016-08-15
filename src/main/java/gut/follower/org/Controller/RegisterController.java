@@ -19,21 +19,13 @@ public class RegisterController {
     @Autowired
     private AccountRepository accountRepository;
 
+
     @RequestMapping(method = RequestMethod.POST)
     public Account registerUser(@RequestBody Account account) {
         return accountRepository.save(registerAccount(account));
     }
 
-    private Account checkIfEmailNotTaken(Account account) {
-        return Optional.of(account)
-                .filter(acc ->
-                            accountRepository
-                                    .findByEmail(acc.getEmail()) == null)
-                .orElseThrow(() ->
-                        new IllegalStateException("Email has been taken"));
-    }
-
-    private Account registerAccount(Account account) {
+    public Account registerAccount(Account account) {
         return Optional
                 .ofNullable(checkIfEmailNotTaken(account))
                 .filter(acc ->
@@ -41,5 +33,14 @@ public class RegisterController {
                                     .findByUsername(acc.getUsername()) == null)
                 .orElseThrow(() ->
                         new IllegalStateException("Username has been taken"));
+    }
+
+    public Account checkIfEmailNotTaken(Account account) {
+        return Optional.ofNullable(account)
+                .filter(acc ->
+                            accountRepository
+                                    .findByEmail(acc.getEmail()) == null)
+                .orElseThrow(() ->
+                        new IllegalStateException("Email has been taken"));
     }
 }

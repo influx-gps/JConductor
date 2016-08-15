@@ -18,17 +18,17 @@ public class LoginController {
     @RequestMapping(method = RequestMethod.POST)
     public Account authenticateUser(@RequestBody Account account){
         return Optional
-                .ofNullable(getAccountForUsername(account.getUsername()))
+                .ofNullable(getAccountForUsername(account))
                 .filter(acc ->
-                        acc.getPassword().equals(account.getPassword()))
+                            acc.getPassword().equals(account.getPassword()))
                 .orElseThrow(() ->
-                        new IllegalStateException("Wrong user credentials"));
+                            new IllegalStateException("Wrong user credentials"));
     }
 
-    private Account getAccountForUsername(String username){
+    public Account getAccountForUsername(Account username){
         return Optional
-                .ofNullable(accountRepository.findByUsername(username))
+                .ofNullable(accountRepository.findByUsername(username.getUsername()))
                 .orElseThrow(() ->
-                        new IllegalStateException("Wrong user credentials"));
+                             new IllegalStateException("Wrong user credentials"));
     }
 }
