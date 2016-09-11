@@ -1,7 +1,7 @@
 ---
 applications:
 - name: jconductor
-  memory: 256M
+  memory: 512M
   path: target/jconductor-0.0.1-SNAPSHOT.jar
   services:
     - mongodb
