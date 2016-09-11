@@ -5,3 +5,13 @@ script:
   - mvn test
 jdk:
   - oraclejdk8
+deploy:
+  edge: true
+  provider: cloudfoundry
+  username: pkprzekwas@gmail.com
+  password: ${PASSWORD_PIVOTAL}
+  api: https://api.run.pivotal.io
+  organization: gut-follower-Org
+  space: development
+  on: 
+    tags: true
