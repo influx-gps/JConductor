@@ -14,4 +14,4 @@ deploy:
   organization: gut-follower-Org
   space: development
   on: 
-    tags: true
+    branch: master
