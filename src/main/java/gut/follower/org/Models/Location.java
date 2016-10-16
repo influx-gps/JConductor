@@ -37,4 +37,18 @@ public class Location {
     public void setTime(long time) {
         this.time = time;
     }
+
+    public Double getDistnace(Location location){
+        final int R = 6371; // Radius of the earth
+
+        Double latDistance = Math.toRadians(this.latitude - location.getLatitude());
+        Double lonDistance = Math.toRadians(this.longitude - location.getLongitude());
+        Double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(location.getLatitude())) * Math.cos(Math.toRadians(this.latitude))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        Double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double distance = R * c; //output in km
+
+        return distance;
+    }
 }

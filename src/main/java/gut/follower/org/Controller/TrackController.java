@@ -47,12 +47,27 @@ public class TrackController {
                 .filter(track -> !track.getFinished())
                 .map(track -> {
                     track.getLocations().add(location);
+                    track.setDistance(calculateDistance(track.getLocations()));
                     track.setFinished(finished);
                     track.setFinishTime(location.getTime());
                     return trackRepository.save(track);
                 })
                 .orElseThrow(() ->
                         new IllegalStateException("This track has been finished"));
+    }
+
+    private Double calculateDistance(List<Location> locationList) {
+        Double distance = 0d;
+        Location lastLocation = null;
+        for(Location location: locationList){
+            if(lastLocation != null){
+                distance += location.getDistnace(lastLocation);
+                lastLocation = location;
+            } else {
+                lastLocation = location;
+            }
+        }
+        return distance;
     }
 
     private Track getTrackByIds(Principal principal, String trackId){
