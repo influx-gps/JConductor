@@ -30,6 +30,7 @@ public class Track {
         this.accountId = accountId;
         this.locations = locations;
         this.startTime = startTime;
+        this.distance = 0d;
     }
 
     public long getStartTime() {
