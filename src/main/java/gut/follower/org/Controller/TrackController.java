@@ -29,7 +29,7 @@ public class TrackController {
     private Track createNewTrack(Principal principal, Location location){
         return new Track(getAccountId(principal),
                          Collections.singletonList(location),
-                         location.getTime());
+                         System.currentTimeMillis());
     }
 
     private String getAccountId(Principal principal){
@@ -81,7 +81,7 @@ public class TrackController {
 
     @RequestMapping(method = RequestMethod.GET)
     public Object getTracks(Principal principal) {
-        return trackRepository.findByAccountId(accountRepository.findByUsername(principal.getName()).getId());
+        return trackRepository.findByAccountIdOrderByStartTimeDesc(accountRepository.findByUsername(principal.getName()).getId());
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
