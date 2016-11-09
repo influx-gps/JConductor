@@ -36,13 +36,13 @@ public class HttpConnection {
         }
     }
 
-    public static void main(String [] args)
-    {
-        System.out.println("Main.main");
-        String payload="{\"lat\":57,\"lon\":18,\"position\":\"START\"}";
-        String requestUrl="http://pykalman.cfapps.io/kalman/5";
-        String response = sendPostRequest(requestUrl, payload);
-        System.out.println(response);
-    }
+//    public static void main(String [] args)
+//    {
+//        System.out.println("Main.main");
+//        String payload="{\"lat\":57,\"lon\":18,\"position\":\"START\"}";
+//        String requestUrl="http://pykalman.cfapps.io/kalman/5";
+//        String response = sendPostRequest(requestUrl, payload);
+//        System.out.println(response);
+//    }
 
 }
