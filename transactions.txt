@@ -1,0 +1,29 @@
+User register:
+
+{
+   "username":"<username>",
+   "password":"<passw>",
+   "email":"<email>"
+}
+
+Start new track:
+
+{
+   "accountId":"<x>",
+   "locations":{
+      "latitude":<x>,
+      "longitude":<x>,
+      "time":<x>
+   },
+   "startTime":<x>,
+   "distance":0
+}
+
+Add data to track:
+
+{
+   "latitude":<x>,
+   "longitude":<x>,
+   "time":<x>
+}
+
