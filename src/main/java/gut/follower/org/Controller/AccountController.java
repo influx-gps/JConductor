@@ -3,6 +3,7 @@ package gut.follower.org.Controller;
 import gut.follower.org.Models.Account;
 import gut.follower.org.Repositories.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -36,6 +37,12 @@ public class AccountController {
                     return repository.save(oldAcc);
                 })
                 .orElseThrow(() -> new IllegalStateException("Changes could not be applied"));
+    }
+
+    @RequestMapping(method = RequestMethod.DELETE)
+    public HttpStatus deleteAccount(Principal principal){
+        repository.delete(getAccountByName(principal));
+        return HttpStatus.OK;
     }
 
     private String getEmail(Account oldAcc, Account newAcc) {

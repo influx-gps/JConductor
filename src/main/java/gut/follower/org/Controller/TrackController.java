@@ -7,6 +7,7 @@ import gut.follower.org.Repositories.AccountRepository;
 import gut.follower.org.Repositories.TrackRepository;
 import gut.follower.org.Utils.TrackUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -82,5 +83,11 @@ public class TrackController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public Track getTrack(Principal principal, @PathVariable String id) {
         return trackRepository.findByAccountIdAndId(accountRepository.findByUsername(principal.getName()).getId(), id);
+    }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    public HttpStatus deleteTrack(Principal principal, @PathVariable String id){
+        trackRepository.delete(getTrackByIds(principal, id));
+        return HttpStatus.OK;
     }
 }

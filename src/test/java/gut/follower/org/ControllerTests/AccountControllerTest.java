@@ -11,9 +11,11 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.http.HttpStatus;
 
 import java.security.Principal;
 
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -59,6 +61,18 @@ public class AccountControllerTest {
     public void testUpdateAccount_emailTaken() {
         when(accountRepository.findByEmail(acc.getEmail())).thenReturn(acc);
         sut.updateAccount(principal, acc);
+    }
+
+    @Test
+    public void testDeleteAccount(){
+        HttpStatus httpStatus = sut.deleteAccount(principal);
+        Assert.assertThat(httpStatus, is(HttpStatus.OK));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testDeleteAccount_accDoesNotExist(){
+        when(accountRepository.findByUsername(TEST_USERNAME)).thenReturn(null);
+        sut.deleteAccount(principal);
     }
 
 }
