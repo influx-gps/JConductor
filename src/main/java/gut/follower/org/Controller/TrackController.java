@@ -5,11 +5,18 @@ import gut.follower.org.Models.Location;
 import gut.follower.org.Models.Track;
 import gut.follower.org.Repositories.AccountRepository;
 import gut.follower.org.Repositories.TrackRepository;
+import gut.follower.org.Utils.TrackUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
-import java.util.*;
+import java.util.Collections;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/rest/track")
@@ -47,27 +54,15 @@ public class TrackController {
                 .filter(track -> !track.getFinished())
                 .map(track -> {
                     track.getLocations().add(location);
-                    track.setDistance(calculateDistance(track.getLocations()));
+                    track.setDistance(TrackUtil.calculateDistance(track.getLocations()));
                     track.setFinished(finished);
                     track.setFinishTime(location.getTime());
+                    track.setAvgSpeed(TrackUtil.calculateAvgSpeed(track));
+                    track.setRunPace(TrackUtil.calculateRunPace(track));
                     return trackRepository.save(track);
                 })
                 .orElseThrow(() ->
                         new IllegalStateException("This track has been finished"));
-    }
-
-    private Double calculateDistance(List<Location> locationList) {
-        Double distance = 0d;
-        Location lastLocation = null;
-        for(Location location: locationList){
-            if(lastLocation != null){
-                distance += location.getDistnace(lastLocation);
-                lastLocation = location;
-            } else {
-                lastLocation = location;
-            }
-        }
-        return distance;
     }
 
     private Track getTrackByIds(Principal principal, String trackId){

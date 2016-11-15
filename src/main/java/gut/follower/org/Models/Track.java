@@ -2,7 +2,6 @@ package gut.follower.org.Models;
 
 import org.springframework.data.annotation.Id;
 
-import java.util.Date;
 import java.util.List;
 
 public class Track {
@@ -16,7 +15,7 @@ public class Track {
 
     private Double avgSpeed;
 
-    private Double maxSpeed;
+    private Double runPace;
 
     private Double distance;
 
@@ -25,6 +24,8 @@ public class Track {
     private long finishTime;
 
     private List<Location> locations;
+
+    public Track(){};
 
     public Track(String accountId, List<Location> locations, long startTime) {
         this.accountId = accountId;
@@ -81,12 +82,12 @@ public class Track {
         this.avgSpeed = avgSpeed;
     }
 
-    public Double getMaxSpeed() {
-        return maxSpeed;
+    public Double getRunPace() {
+        return runPace;
     }
 
-    public void setMaxSpeed(Double maxSpeed) {
-        this.maxSpeed = maxSpeed;
+    public void setRunPace(Double runPace) {
+        this.runPace = runPace;
     }
 
     public Double getDistance() {
