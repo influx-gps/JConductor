@@ -9,9 +9,15 @@ import java.net.URL;
 
 public class RequestCreator {
 
-    public static String sendPostRequest(String requestUrl, String payload) {
+    private String requestUrl;
+
+    public RequestCreator(String requestUrl){
+        this.requestUrl= requestUrl;
+    }
+
+    public String sendPostRequest(String payload) {
         try {
-            URL url = new URL(requestUrl);
+            URL url = new URL(this.requestUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setDoInput(true);

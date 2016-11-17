@@ -83,7 +83,8 @@ public class TrackController {
 
     @RequestMapping(method = RequestMethod.GET)
     public Object getTracks(Principal principal) {
-        return trackRepository.findByAccountIdOrderByStartTimeDesc(accountRepository.findByUsername(principal.getName()).getId());
+        return trackRepository
+                .findByAccountIdOrderByStartTimeDesc(accountRepository.findByUsername(principal.getName()).getId());
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)

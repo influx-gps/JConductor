@@ -5,8 +5,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.util.Optional;
-
 
 public class Kalman {
 
@@ -15,32 +13,15 @@ public class Kalman {
 
 
     public static Location filter(Location location, String trackId, String state) {
-        validateLocation(location);
-        String filterUrl = buildKalmanAddress(trackId);
-        String payload = prepareRequestBody(location, state);
+        Location.validateLocation(location);
+        String filterUrl = addTrackIdEndpoint(trackId);
+        String payload = location.convertToKalmanApiFormat(state);
         return makeRequestToFilter(payload, filterUrl, location);
     }
 
-    public static String prepareRequestBody(Location location, String state){
-        return String.format("{\"latitude\":%f" +
-                        ",\"longitude\":%f" +
-                        ",\"position\":\"%s\"}",
-                location.getLatitude(),
-                location.getLongitude(),
-                state);
-    }
-
-    public static void validateLocation(Location location){
-        Optional.ofNullable(location.getLatitude())
-                .orElseThrow(() -> new IllegalStateException("You need to specify latitude in this request"));
-        Optional.ofNullable(location.getLongitude())
-                .orElseThrow(() -> new IllegalStateException("You need to specify longitude in this request"));
-        Optional.ofNullable(location.getTime())
-                .orElseThrow(() -> new IllegalStateException("You need to specify time in this request"));
-    }
-
     private static Location makeRequestToFilter(String payload, String filterUrl, Location location){
-        String response = RequestCreator.sendPostRequest(filterUrl, payload);
+        RequestCreator requestCreator = new RequestCreator(filterUrl);
+        String response = requestCreator.sendPostRequest(payload);
         try {
             Object obj = parser.parse(response);
             JSONObject data = (JSONObject) obj;
@@ -53,7 +34,7 @@ public class Kalman {
         }
     }
 
-    private static String buildKalmanAddress(String trackId){
+    private static String addTrackIdEndpoint(String trackId){
         return String.format("%s/%s", BaseKalmanAddress, trackId);
     }
 
