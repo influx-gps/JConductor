@@ -1,5 +1,7 @@
 package gut.follower.org.Models;
 
+import java.util.Optional;
+
 public class Location {
 
     private double latitude;
@@ -51,4 +53,19 @@ public class Location {
 
         return distance;
     }
+
+    public static void validateLocation(Location location){
+        Optional.ofNullable(location.getLatitude())
+                .orElseThrow(() -> new IllegalStateException("You need to specify latitude in this request"));
+        Optional.ofNullable(location.getLongitude())
+                .orElseThrow(() -> new IllegalStateException("You need to specify longitude in this request"));
+        Optional.ofNullable(location.getTime())
+                .orElseThrow(() -> new IllegalStateException("You need to specify time in this request"));
+    }
+
+    public String convertToKalmanApiFormat(String state){
+        return String.format("{\"latitude\": %f,\"longitude\": %f,\"position\": \"%s\"}",
+                this.getLatitude(), this.getLongitude(), state);
+    }
+
 }

@@ -5,6 +5,8 @@ import gut.follower.org.Models.Location;
 import gut.follower.org.Models.Track;
 import gut.follower.org.Repositories.AccountRepository;
 import gut.follower.org.Repositories.TrackRepository;
+import gut.follower.org.KalmanConnection.Kalman;
+import gut.follower.org.KalmanConnection.State;
 import gut.follower.org.Utils.TrackUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,7 +33,11 @@ public class TrackController {
 
     @RequestMapping(method = RequestMethod.POST)
     public Track postTrack(Principal principal, @RequestBody Location location) {
-        return trackRepository.save(createNewTrack(principal, location));
+        location = Optional.ofNullable(location).orElseThrow(() ->
+                        new IllegalStateException("You need to specify location in this request"));
+        Track track = trackRepository.save(createNewTrack(principal, location));
+        Kalman.filter(location, track.getId(), State.START.name());
+        return track;
     }
 
     private Track createNewTrack(Principal principal, Location location){
@@ -54,7 +60,7 @@ public class TrackController {
         return Optional.ofNullable(getTrackByIds(principal, id))
                 .filter(track -> !track.getFinished())
                 .map(track -> {
-                    track.getLocations().add(location);
+                    track.getLocations().add(Kalman.filter(location, id, State.CONTINUE.name()));
                     track.setDistance(TrackUtil.calculateDistance(track.getLocations()));
                     track.setFinished(finished);
                     track.setFinishTime(location.getTime());
@@ -77,7 +83,8 @@ public class TrackController {
 
     @RequestMapping(method = RequestMethod.GET)
     public Object getTracks(Principal principal) {
-        return trackRepository.findByAccountIdOrderByStartTimeDesc(accountRepository.findByUsername(principal.getName()).getId());
+        return trackRepository
+                .findByAccountIdOrderByStartTimeDesc(accountRepository.findByUsername(principal.getName()).getId());
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
