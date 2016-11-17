@@ -11,7 +11,7 @@ To register user you can simply use: <br />
 `curl -X POST <app_url>/register -H "Content-Type: application/json" -d '{"username": "<username>", "password": "<passw>", "email": "<email>"}'`
 <br /><br />
 To send track initializing request use: <br />
-`curl -X POST -u <username>:<passw> <app_url>/rest/track -H "Content-Type: application/json" -d '{"accountId": "<x>", "locations": {"latitude": <x>, "longitude": <x>, "time": <x>}, "startTime": <x>,  "distance": 0}'
+`curl -X POST -u <username>:<passw> <app_url>/rest/track -H "Content-Type: application/json" -d '{"latitude": <x>, "longitude": <x>, "time": <x>}'
 `
 <br /><br />
 To add location: <br />
