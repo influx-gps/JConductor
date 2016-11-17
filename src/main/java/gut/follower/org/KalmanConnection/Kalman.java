@@ -34,8 +34,6 @@ public class Kalman {
         }
     }
 
-
-
     private static String addTrackIdEndpoint(String trackId){
         return String.format("%s/%s", BaseKalmanAddress, trackId);
     }
