@@ -1,12 +1,12 @@
 package gut.follower.org.Controller;
 
 
+import gut.follower.org.KalmanConnection.Kalman;
+import gut.follower.org.KalmanConnection.State;
 import gut.follower.org.Models.Location;
 import gut.follower.org.Models.Track;
 import gut.follower.org.Repositories.AccountRepository;
 import gut.follower.org.Repositories.TrackRepository;
-import gut.follower.org.KalmanConnection.Kalman;
-import gut.follower.org.KalmanConnection.State;
 import gut.follower.org.Utils.TrackUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,18 +32,20 @@ public class TrackController {
     private AccountRepository accountRepository;
 
     @RequestMapping(method = RequestMethod.POST)
-    public Track postTrack(Principal principal, @RequestBody Location location) {
+    public Track postTrack(Principal principal, @RequestBody Location location,
+                           @RequestParam(name = "activity") String activity) {
         location = Optional.ofNullable(location).orElseThrow(() ->
                         new IllegalStateException("You need to specify location in this request"));
-        Track track = trackRepository.save(createNewTrack(principal, location));
+        Track track = trackRepository.save(createNewTrack(principal, location, activity));
         Kalman.filter(location, track.getId(), State.START.name());
         return track;
     }
 
-    private Track createNewTrack(Principal principal, Location location){
+    private Track createNewTrack(Principal principal, Location location, String activity){
         return new Track(getAccountId(principal),
                          Collections.singletonList(location),
-                         System.currentTimeMillis());
+                         System.currentTimeMillis(),
+                         activity);
     }
 
     private String getAccountId(Principal principal){

@@ -13,11 +13,13 @@ public class Track {
 
     private boolean finished;
 
-    private Double avgSpeed;
+    private String activity;
 
-    private Double runPace;
+    private Double avgSpeed = 0d;
 
-    private Double distance;
+    private Double runPace = 0d;
+
+    private Double distance = 0d;
 
     private long startTime;
 
@@ -27,11 +29,19 @@ public class Track {
 
     public Track(){};
 
-    public Track(String accountId, List<Location> locations, long startTime) {
+    public Track(String accountId, List<Location> locations, long startTime, String activity) {
         this.accountId = accountId;
         this.locations = locations;
         this.startTime = startTime;
-        this.distance = 0d;
+        this.activity = activity;
+    }
+
+    public String getActivity() {
+        return activity;
+    }
+
+    public void setActivity(String activity) {
+        this.activity = activity;
     }
 
     public long getStartTime() {
